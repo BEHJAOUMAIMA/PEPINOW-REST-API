@@ -125,4 +125,18 @@ class AuthController extends Controller
         ]);
         
     }
+    public function me(Request $request)
+    {
+        return $request->user();
+    }
+    public function logout(){
+       auth()->user()->tokens()->delete();
+       return response()->json([
+        'status' => true,
+        'message'=> 'User Loguut Successfully'
+        ], 200);
+    }
+    public function resetPassword(){
+        
+    }
 }
