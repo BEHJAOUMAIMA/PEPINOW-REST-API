@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User as ModelsUser;
 // use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
@@ -16,40 +17,112 @@ class AuthController extends Controller
      *
      */
     public function createUser(Request $request){
-        try {
-            $validateUser = Validator::make($request->all(), [
-                'name' => 'required|string',
-                'email'=>'required|email|unique:users,email',
-                'password'=>'required|string|confirmed|min:5'
-            ]);
-            if($validateUser->fails()){
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validation Error',
-                    'errors' => $validateUser->errors()
-                ], 401);
-            }
+        // try {
+        //     $validateUser = Validator::make($request->all(), [
+        //         'name' => 'required|string',
+        //         'email'=>'required|email|unique:users,email',
+        //         'password'=>'required|string|confirmed|min:5'
+        //     ]);
+        //     if($validateUser->fails()){
+        //         return response()->json([
+        //             'status' => false,
+        //             'message' => 'Validation Error',
+        //             'errors' => $validateUser->errors()
+        //         ], 401);
+        //     }
+        //     $user = User::create([
+        //         'name'=>$request->name,
+        //         'email'=>$request->email,
+        //         'password'=>Hash::make($request->password)
+        //     ]);
+
+        //     return response()->json([
+        //         'status' => true,
+        //         'message'=> 'User created Successfully',
+        //         'token' => $user->createToken("API TOKEN")->plainTextToken
+        //     ], 200);
+
+        // } catch (\Throwable $th) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => $th->getMessage()
+        //     ], 500);
+        // }
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users|max:255',
+            'password' => 'required|min:5',
+        ]);
+        // Return errors if validation error occur.
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            return response()->json([
+                'error' => $errors
+            ], 400);
+        }
+        // Check if validation pass then create user and auth token. Return the auth token
+        if ($validator->passes()) {
             $user = User::create([
-                'name'=>$request->name,
-                'email'=>$request->email,
-                'password'=>Hash::make($request->password)
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
             ]);
-
+            $token = $user->createToken('auth_token')->plainTextToken;
+        
             return response()->json([
-                'status' => true,
-                'message'=> 'User created Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
-            ], 200);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]);
         }
 
     }
-    public function loginUser(){
+    public function loginUser(Request $request){
+    //     try {
+    //         $validateUser = Validator::make($request->all(), [
+    //             'email'=>'required',
+    //             'password'=>'required'
+    //         ]);
+    //         if($validateUser->fails()){
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'Validation Error',
+    //                 'errors' => $validateUser->errors()
+    //             ], 401);
+    //         }
+    //         if(!Auth::attempt($request->only(['email', 'password']))){
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'Email or Password does not match with our record'
+    //             ], 401);
+    //         }
+    //         $user = User::where('email', $request)->first();
 
+    //         return response()->json([
+    //             'status' => true,
+    //             'message'=> 'User Logged In Successfully',
+    //             'token' => $user->createToken("API TOKEN")->plainTextToken
+    //         ], 200);
+
+    //     } catch (\Throwable $th) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => $th->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
+                return response()->json([
+                    'message' => 'Invalid login details'
+                ], 401);
+        }
+        $user = User::where('email', $request['email'])->firstOrFail();
+        $token = $user->createToken('auth_token')->plainTextToken;
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
+        
     }
 }
