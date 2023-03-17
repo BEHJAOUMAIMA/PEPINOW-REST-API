@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout',[AuthController::class,'logout']);
+    Route::put('/updateProfile',[AuthController::class,'updateProfile']);
 });
 
 Route::post('/auth/register', [AuthController::class, 'createUser']);

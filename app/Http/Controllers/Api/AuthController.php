@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use App\Http\Requests\Auth\ProfileUpdateRequest;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Models\User as ModelsUser;
 // use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
@@ -69,7 +71,7 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password)
             ]);
             $token = $user->createToken('auth_token')->plainTextToken;
-        
+
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'Bearer',
@@ -123,7 +125,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
-        
+
     }
     public function me(Request $request)
     {
@@ -136,7 +138,24 @@ class AuthController extends Controller
         'message'=> 'User Loguut Successfully'
         ], 200);
     }
-    public function resetPassword(){
-        
+    public function updateProfile(Request $request){
+        $user = auth()->user();
+        $request->validate([
+            'name' => 'string|max:255',
+            'email' => 'email|max:255|unique:users,email,'.$user->id,
+            'password' => 'string|min:4|confirmed',
+        ]);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        if ($request->has('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'status'=>true,
+            'message' => 'Profile updated successfully'
+        ],200);
     }
 }
