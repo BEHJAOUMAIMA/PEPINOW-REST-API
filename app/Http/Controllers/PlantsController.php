@@ -34,4 +34,31 @@ class PlantsController extends Controller
         ],200);
     }
 
+    public function show(Plants $plant)
+    {
+        $plant = $plant->load('category:id,category_name');
+        return response()->json([
+            'status'=>true,
+            'song'=>$plant
+        ],200);
+    }
+    public function update(StorePlantsRequest $request, Plants $plant)
+    {
+        $plant->update($request->all());
+        return response()->json([
+            'status'=>true,
+            'message'=>'Song updated Successfully !',
+            'song'=>$plant,
+        ],200);
+    }
+
+    public function destroy(Plants $plant)
+    {
+        $plant->delete();
+        return response()->json([
+            'status'=>true,
+            'message'=>'Song deleted Successfully !',
+        ],200);
+    }
+
 }
