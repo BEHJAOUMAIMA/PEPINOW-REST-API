@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-use App\Http\Requests\Auth\ProfileUpdateRequest;
+use Illuminate\Support\Facades\Password;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Models\User as ModelsUser;
@@ -54,7 +54,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users|max:255',
-            'password' => 'required|min:5',
+            'password' => 'required|string|min:4',
         ]);
         // Return errors if validation error occur.
         if ($validator->fails()) {
@@ -143,8 +143,14 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'string|max:255',
             'email' => 'email|max:255|unique:users,email,'.$user->id,
-            'password' => 'string|min:4|confirmed',
+            'old_password' => 'required|string|min:4',
+            'password' => 'string|min:4|confirmed'
         ]);
+        if (!Hash::check($request->old_password, $user->password)) {
+            return response()->json([
+                'message' => 'The old password does not match'
+            ], 422);
+        }
         $user->name = $request->name;
         $user->email = $request->email;
         if ($request->has('password')) {
@@ -157,5 +163,8 @@ class AuthController extends Controller
             'status'=>true,
             'message' => 'Profile updated successfully'
         ],200);
+    }
+    public function resetPassword(){
+
     }
 }
