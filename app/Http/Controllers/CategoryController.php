@@ -49,16 +49,22 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreCategoriesRequest $request, Category $category)
     {
-        //
+        $category->update($request->all());
+
+        return response()->json([
+            'status'=>true,
+            'message'=>'Category updated Successfully !',
+            'category'=>$category,
+        ],200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        //
+        
     }
 }
