@@ -17,19 +17,33 @@ class PlantsController extends Controller
     {
         $plants = Plants::with('category')->get();
         return response()->json([
-            'status'=>true,
-            'songs'=>$plants
+            'success'=>true,
+            "message"=>"All Plants",
+            'plants'=>$plants
         ]);
 
     }
 
     public function store(StorePlantsRequest $request)
     {
-        $plant = Plants::create($request->all());
-        return response()->json([
+        //  générer un nom de fichier unique
+        $nameFile = now()->format('YmdHisu') . '.' . $request->file('image')->getClientOriginalExtension();
+        // Stocker l'image dans le système de fichiers local
+        $request->file('image')->move(public_path('images'), $nameFile);
+        // obtenir son URL à l'aide de la fonction asset()
+        $urlImg = asset('images/' . $nameFile);
+
+        $plant = Plants::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'image' => $urlImg,
+            'category_id' => $request->category_id,
+        ]);
+         return response()->json([
             'status'=>true,
             'message'=>'Plant created Successfully !',
-            'song'=>$plant,
+            'plant'=>$plant,
         ],200);
     }
 
@@ -38,16 +52,16 @@ class PlantsController extends Controller
         $plant = $plant->load('category:id,category_name');
         return response()->json([
             'status'=>true,
-            'song'=>$plant
+            'data'=>$plant
         ],200);
     }
     public function update(StorePlantsRequest $request, Plants $plant)
     {
-        $plant->update($request->all());
+        $plant->update($request->validated());
         return response()->json([
             'status'=>true,
-            'message'=>'Song updated Successfully !',
-            'song'=>$plant,
+            'message'=>'Plant updated Successfully !',
+            'data'=>$plant,
         ],200);
     }
 
@@ -56,7 +70,7 @@ class PlantsController extends Controller
         $plant->delete();
         return response()->json([
             'status'=>true,
-            'message'=>'Song deleted Successfully !',
+            'message'=>'Plant deleted Successfully !',
         ],200);
     }
 

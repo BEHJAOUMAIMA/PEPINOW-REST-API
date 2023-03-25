@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->float('price');
             $table->string('image');
+            $table->unsignedBigInteger('category_id');
             $table->foreignId('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();
         });
