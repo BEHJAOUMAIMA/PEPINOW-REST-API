@@ -74,4 +74,25 @@ class PlantsController extends Controller
         ],200);
     }
 
+    public function filterCategory($category)
+{
+    $plants = Plants::where('category_id', $category)
+                ->orWhereHas('category', function ($query) use ($category) {
+                    $query->where('name', $category);
+                })
+                ->get();
+
+    if ($plants->isEmpty()) {
+        return response()->json([
+            'status'=>false,
+            'message' => 'Not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'message'=>'Plants',
+        'data'=> $plants,
+    ], 200);
+
+}
 }
