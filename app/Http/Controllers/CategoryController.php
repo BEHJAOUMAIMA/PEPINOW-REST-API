@@ -24,9 +24,15 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoriesRequest $request)
     {
-        //
+        $category = Category::create($request->all());
+        
+        return response()->json([
+            'status'=>true,
+            'message'=>'Category created Successfully !',
+            'category'=>$category
+        ],200);
     }
 
     /**
