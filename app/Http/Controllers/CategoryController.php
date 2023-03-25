@@ -27,7 +27,7 @@ class CategoryController extends Controller
     public function store(StoreCategoriesRequest $request)
     {
         $category = Category::create($request->all());
-        
+
         return response()->json([
             'status'=>true,
             'message'=>'Category created Successfully !',
@@ -38,9 +38,12 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Category $category)
     {
-        //
+        return response()->json([
+            "status" => true,
+            "category" => $category
+        ], 200);
     }
 
     /**
