@@ -23,7 +23,6 @@ class PlantsController extends Controller
 
     }
 
-
     public function store(StorePlantsRequest $request)
     {
         $plant = Plants::create($request->all());

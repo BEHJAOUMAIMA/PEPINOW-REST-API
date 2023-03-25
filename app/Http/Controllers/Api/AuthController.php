@@ -164,7 +164,35 @@ class AuthController extends Controller
             'message' => 'Profile updated successfully'
         ],200);
     }
-    public function resetPassword(){
+    public function resetPassword(Request $request){
+        $request->validate([
+            'email' => 'required|email',
+        ]);
 
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status'=>false,
+                'message' => 'User does not exist'
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'new_password' => 'required|min:8|confirmed',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error'=>$validator->errors()
+                ]);
+            }
+            $user->update([
+                'password'=>Hash::make($request->new_password)
+            ]);
+            return response()->json([
+                'status'=>true,
+                'message'=>'password reseted successfully'
+            ], 200);
+        }
     }
 }
