@@ -49,11 +49,18 @@ class PlantsController extends Controller
 
     public function show(Plants $plant)
     {
-        $plant = $plant->load('category:id,category_name');
+        // dd( $plant);
         return response()->json([
             'status'=>true,
-            'data'=>$plant
+            'plant' => $plant,
+            'category' => $plant->category,
         ],200);
+        // $plant = $plant->load('category');
+        // return response()->json([
+        //     'status'=>true,
+        //     'data'=>$plant
+        // ],200);
+
     }
     public function update(StorePlantsRequest $request, Plants $plant)
     {
