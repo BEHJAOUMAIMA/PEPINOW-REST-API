@@ -150,7 +150,7 @@ class AuthController extends Controller
         $users = User::all();
         return response()->json([
             'status'=>true,
-            'message'=W'Users List',
+            'message'=>'Users List',
             'Users'=>$users
         ],200);
     }
