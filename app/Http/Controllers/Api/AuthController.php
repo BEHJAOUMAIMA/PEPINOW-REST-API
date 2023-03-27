@@ -129,12 +129,14 @@ class AuthController extends Controller
         }
     }
     public function changeRole(Request $request, $id){
+        
+        $user = User::findOrFail($id);
         $validatedData = $request->validate([
-            'role' => 'required|in:0,1,2',
+            'role' => 'required|integer|in:0,1,2',
         ]);
 
-        $user = User::findOrFail($id);
-        $user->update($validatedData);
+        $user->role = $validatedData['role'];
+        $user->save();
 
         return response()->json([
             'status'=>true,

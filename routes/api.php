@@ -30,17 +30,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/plant/{id}', [PlantsController::class, "show"]);
     Route::get('/plants/categories/{id}', [PlantsController::class, 'filterCategory']);
 });
-Route::middleware(['auth', 'IsAdmin'])->group(function () {
+Route::middleware(['auth:sanctum','IsAdmin'])->group(function () {
     Route::apiResource('/categories', CategoryController::class);
     Route::get('/plants', [PlantsController::class, "index"]);
     Route::get('/getPlant/{id}', [PlantsController::class, "show"]);
     Route::put('/editPlant/{id}', [PlantsController::class, "update"]);
     Route::delete('/deletePlant/{id}', [PlantsController::class, "destroy"]);
     Route::get('/allUsers',[AuthController::class,'allUsers']);
-    Route::put('/changeRole/{id}',[AuthController::class,'updateRole']);
+    Route::put('/changeRole/{id}',[AuthController::class,'changeRole']);
 });
 
-Route::middleware(['auth', 'IsSeller'])->group(function () {
+Route::middleware(['auth:sanctum','IsSeller'])->group(function () {
     Route::apiResource('/plants', PlantsController::class);
 });
 
