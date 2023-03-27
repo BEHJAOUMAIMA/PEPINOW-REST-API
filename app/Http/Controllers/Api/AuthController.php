@@ -14,7 +14,8 @@ class AuthController extends Controller
      * @param Request $request
      *
      */
-    public function createUser(Request $request){
+    public function createUser(Request $request)
+    {
 
 
         // Validate request data
@@ -46,7 +47,8 @@ class AuthController extends Controller
         }
 
     }
-    public function loginUser(Request $request){
+    public function loginUser(Request $request)
+    {
         if (!Auth::attempt($request->only('email', 'password'))) {
                 return response()->json([
                     'message' => 'Invalid login details'
@@ -64,14 +66,16 @@ class AuthController extends Controller
     {
         return $request->user();
     }
-    public function logout(){
+    public function logout()
+    {
        auth()->user()->tokens()->delete();
        return response()->json([
         'status' => true,
         'message'=> 'User Loguut Successfully'
         ], 200);
     }
-    public function updateProfile(Request $request){
+    public function updateProfile(Request $request)
+    {
         $user = auth()->user();
         $request->validate([
             'name' => 'string|max:255',
@@ -97,7 +101,8 @@ class AuthController extends Controller
             'message' => 'Profile updated successfully'
         ],200);
     }
-    public function resetPassword(Request $request){
+    public function resetPassword(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
         ]);
@@ -128,7 +133,8 @@ class AuthController extends Controller
             ], 200);
         }
     }
-    public function changeRole(Request $request, $id){
+    public function changeRole(Request $request, $id)
+    {
         
         $user = User::findOrFail($id);
         $validatedData = $request->validate([
@@ -144,7 +150,8 @@ class AuthController extends Controller
             'user' => $user
         ], 201);
     }
-    public function allUsers(){
+    public function allUsers()
+    {
         $users = User::all();
         return response()->json([
             'status'=>true,
