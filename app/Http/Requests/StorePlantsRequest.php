@@ -25,7 +25,7 @@ class StorePlantsRequest extends FormRequest
             'name'=>'required|string',
             'description'=>'required',
             'price'=>'required|numeric',
-            'image'=>'string',
+            // 'image'=>'|mimes:jpg,jpeg,png,svg',
             'category_id'=>'required|exists:categories,id'
         ];
     }
